@@ -6,8 +6,7 @@
 // Define constants
 #define MAX_STUDENTS 50
 #define MAX_TEACHERS 20
-#define FILENAME "school_data.txt"
-#define ADMIN_PASSCODE 1234
+#define ACCOUNTS_FILE "#define FILENAME "D:\\School C\\accounts\\accounts.txt"
 #define MAX_ADMIN_ACCOUNTS 1
 
 // Define structures
@@ -25,7 +24,7 @@ struct Teacher {
 
 struct Admin {
     char username[50];
-    int passcode;
+    char password[50];  
 };
 
 // Function to initialize the array of students and set the number of students to zero
@@ -39,7 +38,7 @@ void initializeTeachers(struct Teacher teachers[MAX_TEACHERS], int *numTeachers)
 }
 
 // Function to add a new student to the array, validating name and grade
-void addStudent(struct Student students[MAX_STUDENTS], int *numStudents) {
+void addStudent(struct Student students[MAX_STUDENTS], int numStudents) {
     int isValidName, isValidGrade;
 
     do {
@@ -243,8 +242,9 @@ void displayTotalCounts(int numStudents, int numTeachers) {
     printf("Total Teachers: %d\n", numTeachers);
 }
 
-// Function to save student and teacher data to a file
-void saveDataToFile(struct Student students[MAX_STUDENTS], int numStudents, struct Teacher teachers[MAX_TEACHERS], int numTeachers) {
+void saveDataToFile(struct Student students[MAX_STUDENTS], int numStudents,
+                    struct Teacher teachers[MAX_TEACHERS], int numTeachers
+                    struct Admin admins[MAX_ADMIN_ACCOUNTS]) {
     FILE *file = fopen(FILENAME, "w");
     if (file != NULL) {
         fprintf(file, "%d\n", numStudents);
@@ -257,6 +257,9 @@ void saveDataToFile(struct Student students[MAX_STUDENTS], int numStudents, stru
             fprintf(file, "%d %s %.2lf\n", teachers[i].teacherID, teachers[i].name, teachers[i].salary);
         }
 
+        // Save admin data
+        fprintf(file, "%s %s\n", admins[0].username, admins[0].password);
+
         fclose(file);
         printf("Data saved to file.\n");
     } else {
@@ -264,8 +267,10 @@ void saveDataToFile(struct Student students[MAX_STUDENTS], int numStudents, stru
     }
 }
 
-// Function to load student and teacher data from a file
-void loadDataFromFile(struct Student students[MAX_STUDENTS], int *numStudents, struct Teacher teachers[MAX_TEACHERS], int *numTeachers) {
+
+void loadDataFromFile(struct Student students[MAX_STUDENTS], int *numStudents,
+                      struct Teacher teachers[MAX_TEACHERS], int *numTeachers,
+                      struct Admin admins[MAX_ADMIN_ACCOUNTS]) {
     FILE *file = fopen(FILENAME, "r");
     if (file != NULL) {
         fscanf(file, "%d", numStudents);
@@ -278,6 +283,9 @@ void loadDataFromFile(struct Student students[MAX_STUDENTS], int *numStudents, s
             fscanf(file, "%d %s %lf", &teachers[i].teacherID, teachers[i].name, &teachers[i].salary);
         }
 
+        // Load admin data
+        fscanf(file, "%s %s", admins[0].username, admins[0].password);
+
         fclose(file);
         printf("Data loaded from file.\n");
     } else {
@@ -285,21 +293,23 @@ void loadDataFromFile(struct Student students[MAX_STUDENTS], int *numStudents, s
     }
 }
 
-// Function to perform admin login
 int adminLogin(struct Admin admins[MAX_ADMIN_ACCOUNTS]) {
-    int passcode;
-    printf("Enter admin passcode: ");
-    scanf("%d", &passcode);
+    char inputUsername[50];
+    char inputPassword[50];
 
-    for (int i = 0; i < MAX_ADMIN_ACCOUNTS; i++) {
-        if (passcode == admins[i].passcode) {
-            printf("Admin login successful!\n");
-            return 1;  // Return 1 to indicate successful login
-        }
+    printf("Enter admin username: ");
+    scanf("%s", inputUsername);
+
+    printf("Enter admin password: ");
+    scanf("%s", inputPassword);
+
+    if (strcmp(inputUsername, admins[0].username) == 0 && strcmp(inputPassword, admins[0].password) == 0) {
+        printf("Admin login successful!\n");
+        return 1;  // Return 1 to indicate successful login
+    } else {
+        printf("Incorrect username or password. Access denied.\n");
+        return 0;  // Return 0 to indicate failed login
     }
-
-    printf("Incorrect passcode. Access denied.\n");
-    return 0;  // Return 0 to indicate failed login
 }
 
 // Function to perform admin signup
@@ -307,8 +317,8 @@ void adminSignUp(struct Admin admins[MAX_ADMIN_ACCOUNTS]) {
     printf("Enter admin username: ");
     scanf("%s", admins[0].username);
 
-    printf("Enter admin passcode: ");
-    scanf("%d", &admins[0].passcode);
+    printf("Enter admin password: ");
+    scanf("%s", admins[0].password);
 
     printf("Admin account created successfully.\n");
 }
@@ -329,29 +339,44 @@ void enterSchoolName(char schoolName[]) {
 
 // Function to display the admin menu
 void adminMenu(struct Student students[MAX_STUDENTS], int *numStudents,
-               struct Teacher teachers[MAX_TEACHERS], int *numTeachers) {
+               struct Teacher teachers[MAX_TEACHERS], int *numTeachers,
+               struct Admin admins[MAX_ADMIN_ACCOUNTS]) {
     char schoolName[50];
 
     // Enter the school name
     enterSchoolName(schoolName);
 
-    int choice;
+int choice;
     do {
         printf("\nAdmin Menu\n");
-        printf("14. Perform Admin Operation\n");
-        printf("0. Exit\n");
+        printf("1. Admin Sign Up\n");
+        printf("2. Admin Login\n");
+        printf("3. Perform Admin Operation\n");
+        printf("0. Exit Admin Menu\n");
         printf("Enter your choice: ");
         scanf("%d", &choice);
 
         switch (choice) {
-            case 14:
+            case 1:
+                adminSignUp(admins);
+                saveDataToFile(students, *numStudents, teachers, *numTeachers, admins);
+                break;
+            case 2:
+                if (adminLogin(admins)) {
+                    printf("Admin Login Successful!\n");
+                } else {
+                    printf("Admin Login Failed. Exiting...\n");
+                    return;
+                }
+                break;
+            case 3:
                 // Additional admin functionalities can be added here
                 break;
             case 0:
                 printf("Exiting admin menu.\n");
                 break;
             default:
-                printf("Invalid choice. Please enter 0 or 14.\n");
+                printf("Invalid choice. Please enter a number between 0 and 3.\n");
         }
     } while (choice != 0);
 }
@@ -375,6 +400,9 @@ int main() {
     }
 
     // Main menu
+   void mainMenu(struct Student students[MAX_STUDENTS], int *numStudents,
+              struct Teacher teachers[MAX_TEACHERS], int *numTeachers,
+              struct Admin admins[MAX_ADMIN_ACCOUNTS]) {
     int choice;
     do {
         printf("\nSchool Management System\n");
@@ -470,6 +498,22 @@ int main() {
                 printf("Invalid choice. Please enter a number between 0 and 14.\n");
         }
     } while (choice != 0);
+
+}
+int main() {
+    struct Student students[MAX_STUDENTS];
+    struct Teacher teachers[MAX_TEACHERS];
+    struct Admin admins[MAX_ADMIN_ACCOUNTS];
+    int numStudents = 0;
+    int numTeachers = 0;
+
+    initializeStudents(students, &numStudents);
+    initializeTeachers(teachers, &numTeachers);
+
+    loadDataFromFile(students, &numStudents, teachers, &numTeachers, admins);
+
+    // Main menu
+    mainMenu(students, &numStudents, teachers, &numTeachers, admins);
 
     return 0;
 }
