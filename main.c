@@ -3,517 +3,402 @@
 #include <string.h>
 #include <ctype.h>
 
-// Define constants
-#define MAX_STUDENTS 50
-#define MAX_TEACHERS 20
-#define ACCOUNTS_FILE "#define FILENAME "D:\\School C\\accounts\\accounts.txt"
-#define MAX_ADMIN_ACCOUNTS 1
 
-// Define structures
 struct Student {
-    int studentID;
+    int id;
     char name[50];
-    int grade;
+    char grade[3]; 
 };
-
 struct Teacher {
-    int teacherID;
+    int id;
     char name[50];
-    double salary;
+    char subject[50];
 };
 
-struct Admin {
-    char username[50];
-    char password[50];  
-};
 
-// Function to initialize the array of students and set the number of students to zero
-void initializeStudents(struct Student students[MAX_STUDENTS], int *numStudents) {
-    *numStudents = 0;
-}
+void adminSignup();
+void adminLogin();
+void exitProgram();
+void addStudent();
+void updateStudentInfo();
+void removeStudent();
+void displayStudents();
+void addTeacher();
+void updateTeacherInfo();
+void removeTeacher();
+void calculateAverageGrade();
 
-// Function to initialize the array of teachers and set the number of teachers to zero
-void initializeTeachers(struct Teacher teachers[MAX_TEACHERS], int *numTeachers) {
-    *numTeachers = 0;
-}
 
-// Function to add a new student to the array, validating name and grade
-void addStudent(struct Student students[MAX_STUDENTS], int numStudents) {
-    int isValidName, isValidGrade;
+int main() {
+    int choice;
 
     do {
-        isValidName = 1;
-        printf("Enter student name: ");
-        scanf("%s", students[*numStudents].name);
-
-        for (int i = 0; students[*numStudents].name[i] != '\0'; i++) {
-            if (!isalpha(students[*numStudents].name[i])) {
-                isValidName = 0;
-                break;
-            }
-        }
-
-        if (!isValidName) {
-            printf("Invalid name. Please enter alphabetic characters only.\n");
-        }
-
-    } while (!isValidName);
-
-    do {
-        isValidGrade = 1;
-        printf("Enter student grade: ");
-        if (scanf("%d", &students[*numStudents].grade) != 1 || students[*numStudents].grade < 0 || students[*numStudents].grade > 100) {
-            isValidGrade = 0;
-            printf("Grade must be numeric \n");
-            while (getchar() != '\n');
-        }
-
-    } while (!isValidGrade);
-
-    students[*numStudents].studentID = *numStudents + 1;
-    (*numStudents)++;
-    printf("Student added successfully.\n");
-}
-
-// Function to update information for an existing student based on studentID
-void updateStudent(struct Student students[MAX_STUDENTS], int numStudents, int studentID) {
-    int index = -1;
-    for (int i = 0; i < numStudents; i++) {
-        if (students[i].studentID == studentID) {
-            index = i;
-            break;
-        }
-    }
-
-    if (index != -1) {
-        printf("Enter new student name: ");
-        scanf("%s", students[index].name);
-        printf("Enter new student grade: ");
-        scanf("%d", &students[index].grade);
-        printf("Student information updated successfully.\n");
-    } else {
-        printf("Student not found.\n");
-    }
-}
-
-// Function to remove a student based on studentID
-void removeStudent(struct Student students[MAX_STUDENTS], int *numStudents, int studentID) {
-    int index = -1;
-    for (int i = 0; i < *numStudents; i++) {
-        if (students[i].studentID == studentID) {
-            index = i;
-            break;
-        }
-    }
-
-    if (index != -1) {
-        for (int i = index; i < *numStudents - 1; i++) {
-            students[i] = students[i + 1];
-        }
-        (*numStudents)--;
-        printf("Student removed successfully.\n");
-    } else {
-        printf("Student not found.\n");
-    }
-}
-
-// Function to display information for a student based on studentID
-void displayStudentInfo(struct Student students[MAX_STUDENTS], int studentID) {
-    int index = -1;
-    for (int i = 0; i < MAX_STUDENTS; i++) {
-        if (students[i].studentID == studentID) {
-            index = i;
-            break;
-        }
-    }
-
-    if (index != -1) {
-        printf("Student ID: %d\n", students[index].studentID);
-        printf("Name: %s\n", students[index].name);
-        printf("Grade: %d\n", students[index].grade);
-    } else {
-        printf("Student not found.\n");
-    }
-}
-
-// Function to add a new teacher to the array
-void addTeacher(struct Teacher teachers[MAX_TEACHERS], int *numTeachers) {
-    printf("Enter teacher name: ");
-    scanf("%s", teachers[*numTeachers].name);
-    printf("Enter teacher salary: ");
-    scanf("%lf", &teachers[*numTeachers].salary);
-    teachers[*numTeachers].teacherID = *numTeachers + 1;
-    (*numTeachers)++;
-    printf("Teacher added successfully.\n");
-}
-
-// Function to update information for an existing teacher based on teacherID
-void updateTeacher(struct Teacher teachers[MAX_TEACHERS], int numTeachers, int teacherID) {
-    int index = -1;
-    for (int i = 0; i < numTeachers; i++) {
-        if (teachers[i].teacherID == teacherID) {
-            index = i;
-            break;
-        }
-    }
-
-    if (index != -1) {
-        printf("Enter new teacher name: ");
-        scanf("%s", teachers[index].name);
-        printf("Enter new teacher salary: ");
-        scanf("%lf", &teachers[index].salary);
-        printf("Teacher information updated successfully.\n");
-    } else {
-        printf("Teacher not found.\n");
-    }
-}
-
-// Function to remove a teacher based on teacherID
-void removeTeacher(struct Teacher teachers[MAX_TEACHERS], int *numTeachers, int teacherID) {
-    int index = -1;
-    for (int i = 0; i < *numTeachers; i++) {
-        if (teachers[i].teacherID == teacherID) {
-            index = i;
-            break;
-        }
-    }
-
-    if (index != -1) {
-        for (int i = index; i < *numTeachers - 1; i++) {
-            teachers[i] = teachers[i + 1];
-        }
-        (*numTeachers)--;
-        printf("Teacher removed successfully.\n");
-    } else {
-        printf("Teacher not found.\n");
-    }
-}
-
-// Function to display information for a teacher based on teacherID
-void displayTeacherInfo(struct Teacher teachers[MAX_TEACHERS], int teacherID) {
-    int index = -1;
-    for (int i = 0; i < MAX_TEACHERS; i++) {
-        if (teachers[i].teacherID == teacherID) {
-            index = i;
-            break;
-        }
-    }
-
-    if (index != -1) {
-        printf("Teacher ID: %d\n", teachers[index].teacherID);
-        printf("Name: %s\n", teachers[index].name);
-        printf("Salary: %.2lf\n", teachers[index].salary);
-    } else {
-        printf("Teacher not found.\n");
-    }
-}
-
-// Function to calculate and display the average grade of all students
-void calculateAverageGrade(struct Student students[MAX_STUDENTS], int numStudents) {
-    if (numStudents > 0) {
-        int totalGrade = 0;
-        for (int i = 0; i < numStudents; i++) {
-            totalGrade += students[i].grade;
-        }
-        double averageGrade = (double)totalGrade / numStudents;
-        printf("Average Grade: %.2lf\n", averageGrade);
-    } else {
-        printf("No students available.\n");
-    }
-}
-
-// Function to calculate and display the average salary of all teachers
-void calculateAverageSalary(struct Teacher teachers[MAX_TEACHERS], int numTeachers) {
-    if (numTeachers > 0) {
-        double totalSalary = 0;
-        for (int i = 0; i < numTeachers; i++) {
-            totalSalary += teachers[i].salary;
-        }
-        double averageSalary = totalSalary / numTeachers;
-        printf("Average Salary: %.2lf\n", averageSalary);
-    } else {
-        printf("No teachers available.\n");
-    }
-}
-
-// Function to display the total number of students and teachers
-void displayTotalCounts(int numStudents, int numTeachers) {
-    printf("Total Students: %d\n", numStudents);
-    printf("Total Teachers: %d\n", numTeachers);
-}
-
-void saveDataToFile(struct Student students[MAX_STUDENTS], int numStudents,
-                    struct Teacher teachers[MAX_TEACHERS], int numTeachers
-                    struct Admin admins[MAX_ADMIN_ACCOUNTS]) {
-    FILE *file = fopen(FILENAME, "w");
-    if (file != NULL) {
-        fprintf(file, "%d\n", numStudents);
-        for (int i = 0; i < numStudents; i++) {
-            fprintf(file, "%d %s %d\n", students[i].studentID, students[i].name, students[i].grade);
-        }
-
-        fprintf(file, "%d\n", numTeachers);
-        for (int i = 0; i < numTeachers; i++) {
-            fprintf(file, "%d %s %.2lf\n", teachers[i].teacherID, teachers[i].name, teachers[i].salary);
-        }
-
-        // Save admin data
-        fprintf(file, "%s %s\n", admins[0].username, admins[0].password);
-
-        fclose(file);
-        printf("Data saved to file.\n");
-    } else {
-        printf("Error opening file for writing.\n");
-    }
-}
-
-
-void loadDataFromFile(struct Student students[MAX_STUDENTS], int *numStudents,
-                      struct Teacher teachers[MAX_TEACHERS], int *numTeachers,
-                      struct Admin admins[MAX_ADMIN_ACCOUNTS]) {
-    FILE *file = fopen(FILENAME, "r");
-    if (file != NULL) {
-        fscanf(file, "%d", numStudents);
-        for (int i = 0; i < *numStudents; i++) {
-            fscanf(file, "%d %s %d", &students[i].studentID, students[i].name, &students[i].grade);
-        }
-
-        fscanf(file, "%d", numTeachers);
-        for (int i = 0; i < *numTeachers; i++) {
-            fscanf(file, "%d %s %lf", &teachers[i].teacherID, teachers[i].name, &teachers[i].salary);
-        }
-
-        // Load admin data
-        fscanf(file, "%s %s", admins[0].username, admins[0].password);
-
-        fclose(file);
-        printf("Data loaded from file.\n");
-    } else {
-        printf("No existing data file found.\n");
-    }
-}
-
-int adminLogin(struct Admin admins[MAX_ADMIN_ACCOUNTS]) {
-    char inputUsername[50];
-    char inputPassword[50];
-
-    printf("Enter admin username: ");
-    scanf("%s", inputUsername);
-
-    printf("Enter admin password: ");
-    scanf("%s", inputPassword);
-
-    if (strcmp(inputUsername, admins[0].username) == 0 && strcmp(inputPassword, admins[0].password) == 0) {
-        printf("Admin login successful!\n");
-        return 1;  // Return 1 to indicate successful login
-    } else {
-        printf("Incorrect username or password. Access denied.\n");
-        return 0;  // Return 0 to indicate failed login
-    }
-}
-
-// Function to perform admin signup
-void adminSignUp(struct Admin admins[MAX_ADMIN_ACCOUNTS]) {
-    printf("Enter admin username: ");
-    scanf("%s", admins[0].username);
-
-    printf("Enter admin password: ");
-    scanf("%s", admins[0].password);
-
-    printf("Admin account created successfully.\n");
-}
-
-// Function to enter the school name
-void enterSchoolName(char schoolName[]) {
-    printf("Enter the name of the school: ");
-    scanf("%s", schoolName);
-
-    // Validate that the name contains only alphabetic characters
-    for (int i = 0; schoolName[i] != '\0'; i++) {
-        if (!isalpha(schoolName[i])) {
-            printf("Invalid school name. Please enter alphabetic characters only.\n");
-            exit(EXIT_FAILURE);
-        }
-    }
-}
-
-// Function to display the admin menu
-void adminMenu(struct Student students[MAX_STUDENTS], int *numStudents,
-               struct Teacher teachers[MAX_TEACHERS], int *numTeachers,
-               struct Admin admins[MAX_ADMIN_ACCOUNTS]) {
-    char schoolName[50];
-
-    // Enter the school name
-    enterSchoolName(schoolName);
-
-int choice;
-    do {
-        printf("\nAdmin Menu\n");
-        printf("1. Admin Sign Up\n");
+        printf("\n1. Admin Signup\n");
         printf("2. Admin Login\n");
-        printf("3. Perform Admin Operation\n");
-        printf("0. Exit Admin Menu\n");
+        printf("3. Exit\n");
         printf("Enter your choice: ");
         scanf("%d", &choice);
 
         switch (choice) {
             case 1:
-                adminSignUp(admins);
-                saveDataToFile(students, *numStudents, teachers, *numTeachers, admins);
+                adminSignup();
                 break;
             case 2:
-                if (adminLogin(admins)) {
-                    printf("Admin Login Successful!\n");
-                } else {
-                    printf("Admin Login Failed. Exiting...\n");
-                    return;
-                }
+                adminLogin();
                 break;
             case 3:
-                // Additional admin functionalities can be added here
-                break;
-            case 0:
-                printf("Exiting admin menu.\n");
+                exitProgram();
                 break;
             default:
-                printf("Invalid choice. Please enter a number between 0 and 3.\n");
+                printf("Invalid choice! Please enter a valid option.\n");
         }
-    } while (choice != 0);
-}
-
-// Main function
-int main() {
-    struct Student students[MAX_STUDENTS];
-    struct Teacher teachers[MAX_TEACHERS];
-    struct Admin admins[MAX_ADMIN_ACCOUNTS];
-    int numStudents = 0;
-    int numTeachers = 0;
-
-    initializeStudents(students, &numStudents);
-    initializeTeachers(teachers, &numTeachers);
-
-    adminSignUp(admins);
-
-    if (!adminLogin(admins)) {
-        printf("Admin login failed. Exiting...\n");
-        return 1;  // Return an error code to indicate failure
-    }
-
-    // Main menu
-   void mainMenu(struct Student students[MAX_STUDENTS], int *numStudents,
-              struct Teacher teachers[MAX_TEACHERS], int *numTeachers,
-              struct Admin admins[MAX_ADMIN_ACCOUNTS]) {
-    int choice;
-    do {
-        printf("\nSchool Management System\n");
-        printf("1. Add Student\n");
-        printf("2. Update Student Information\n");
-        printf("3. Remove Student\n");
-        printf("4. Display Student Information\n");
-        printf("5. Add Teacher\n");
-        printf("6. Update Teacher Information\n");
-        printf("7. Remove Teacher\n");
-        printf("8. Display Teacher Information\n");
-        printf("9. Calculate Average Grade\n");
-        printf("10. Calculate Average Salary\n");
-        printf("11. Display Total Counts\n");
-        printf("12. Save Data to File\n");
-        printf("13. Load Data from File\n");
-        printf("14. Admin Menu\n");
-        printf("0. Exit\n");
-        printf("Enter your choice: ");
-        scanf("%d", &choice);
-
-        switch (choice) {
-            case 1:
-                addStudent(students, &numStudents);
-                break;
-            case 2: {
-                int studentID;
-                printf("Enter student ID: ");
-                scanf("%d", &studentID);
-                updateStudent(students, numStudents, studentID);
-                break;
-            }
-            case 3: {
-                int studentID;
-                printf("Enter student ID: ");
-                scanf("%d", &studentID);
-                removeStudent(students, &numStudents, studentID);
-                break;
-            }
-            case 4: {
-                int studentID;
-                printf("Enter student ID: ");
-                scanf("%d", &studentID);
-                displayStudentInfo(students, studentID);
-                break;
-            }
-            case 5:
-                addTeacher(teachers, &numTeachers);
-                break;
-            case 6: {
-                int teacherID;
-                printf("Enter teacher ID: ");
-                scanf("%d", &teacherID);
-                updateTeacher(teachers, numTeachers, teacherID);
-                break;
-            }
-            case 7: {
-                int teacherID;
-                printf("Enter teacher ID: ");
-                scanf("%d", &teacherID);
-                removeTeacher(teachers, &numTeachers, teacherID);
-                break;
-            }
-            case 8: {
-                int teacherID;
-                printf("Enter teacher ID: ");
-                scanf("%d", &teacherID);
-                displayTeacherInfo(teachers, teacherID);
-                break;
-            }
-            case 9:
-                calculateAverageGrade(students, numStudents);
-                break;
-            case 10:
-                calculateAverageSalary(teachers, numTeachers);
-                break;
-            case 11:
-                displayTotalCounts(numStudents, numTeachers);
-                break;
-            case 12:
-                saveDataToFile(students, numStudents, teachers, numTeachers);
-                break;
-            case 13:
-                loadDataFromFile(students, &numStudents, teachers, &numTeachers);
-                break;
-            case 14:
-                adminMenu(students, &numStudents, teachers, &numTeachers);
-                break;
-            case 0:
-                printf("Exiting program. Goodbye!\n");
-                break;
-            default:
-                printf("Invalid choice. Please enter a number between 0 and 14.\n");
-        }
-    } while (choice != 0);
-
-}
-int main() {
-    struct Student students[MAX_STUDENTS];
-    struct Teacher teachers[MAX_TEACHERS];
-    struct Admin admins[MAX_ADMIN_ACCOUNTS];
-    int numStudents = 0;
-    int numTeachers = 0;
-
-    initializeStudents(students, &numStudents);
-    initializeTeachers(teachers, &numTeachers);
-
-    loadDataFromFile(students, &numStudents, teachers, &numTeachers, admins);
-
-    // Main menu
-    mainMenu(students, &numStudents, teachers, &numTeachers, admins);
+    } while (choice != 3);
 
     return 0;
+}
+
+void adminSignup() {
+    char username[50];
+    char password[50];
+    int valid;
+
+    do {
+        valid = 1;
+        printf("Enter username: ");
+        scanf("%s", username);
+        printf("Enter password: ");
+        scanf("%s", password);
+
+        for (int i = 0; username[i] != '\0'; i++) {
+            if (!isalpha(username[i])) {
+                valid = 0;
+                printf("Invalid username! Please enter alphabetic characters only.\n");
+                break;
+            }
+        }
+
+        for (int i = 0; password[i] != '\0'; i++) {
+            if (!isalpha(password[i])) {
+                valid = 0;
+                printf("Invalid password! Please enter alphabetic characters only.\n");
+                break;
+            }
+        }
+
+        if (valid) {
+            FILE *fp = fopen("admin.txt", "w");
+            fprintf(fp, "%s %s", username, password);
+            fclose(fp);
+
+            printf("Admin account created successfully!\n");
+        }
+
+    } while (!valid);
+}
+
+void adminLogin() {
+    char username[50];
+    char password[50];
+
+    printf("Enter username: ");
+    scanf("%s", username);
+    printf("Enter password: ");
+    scanf("%s", password);
+
+    FILE *fp = fopen("admin.txt", "r");
+    char storedUsername[50];
+    char storedPassword[50];
+    fscanf(fp, "%s %s", storedUsername, storedPassword);
+    fclose(fp);
+
+    if (strcmp(username, storedUsername) == 0 && strcmp(password, storedPassword) == 0) {
+        printf("Admin login successful!\n");
+
+        
+        int adminChoice;
+        do {
+            printf("\n--------------------------------------\n");
+            printf("1. Add Student\n");
+            printf("2. Update Student Information\n");
+            printf("3. Remove Student\n");
+            printf("4. Display Students\n");
+            printf("5. Add Teacher\n");
+            printf("6. Update Teacher Information\n");
+            printf("7. Remove Teacher\n");
+            printf("8. Calculate Average Grade\n");
+            printf("9. Exit\n");
+            printf("--------------------------------------\n");
+            printf("Enter your choice: ");
+            scanf("%d", &adminChoice);
+
+            switch (adminChoice) {
+                case 1:
+                    addStudent();
+                    break;
+                case 2:
+                    updateStudentInfo();
+                    break;
+                case 3:
+                    removeStudent();
+                    break;
+                case 4:
+                    displayStudents();
+                    break;
+                case 5:
+                    addTeacher();
+                    break;
+                case 6:
+                    updateTeacherInfo();
+                    break;
+                case 7:
+                    removeTeacher();
+                    break;
+                case 8:
+                    calculateAverageGrade();
+                    break;
+                case 9:
+                    exitProgram();
+                    break;
+                default:
+                    printf("Invalid choice! Please enter a valid option.\n");
+            }
+        } while (adminChoice != 9);
+    } else {
+        printf("Invalid username or password! Please try again.\n");
+    }
+}
+
+void exitProgram() {
+    printf("Exiting program...\n");
+    exit(0);
+}
+
+void addStudent() {
+    struct Student newStudent;
+    printf("Enter student name: ");
+    scanf("%s", newStudent.name);
+    printf("Enter student ID: ");
+    scanf("%d", &newStudent.id);
+    printf("Enter student GPA: ");
+    scanf("%s", newStudent.GPA); 
+
+    FILE *fp = fopen("students.txt", "a");
+    if (fp == NULL) {
+        printf("Error opening file!\n");
+        return;
+    }
+    fprintf(fp, "%d %s %s\n", newStudent.id, newStudent.name, newStudent.grade); // Changed to write grade as string
+    fclose(fp);
+    printf("Student added successfully!\n");
+}
+
+void updateStudentInfo() {
+    int id;
+    printf("Enter the ID of the student whose information you want to update: ");
+    scanf("%d", &id);
+
+    FILE *fp = fopen("students.txt", "r");
+    FILE *tempFile = fopen("temp.txt", "w");
+    if (fp == NULL || tempFile == NULL) {
+        printf("Error opening file!\n");
+        return;
+    }
+
+    struct Student student;
+    int found = 0;
+    while (fscanf(fp, "%d %s %s", &student.id, student.name, student.grade) != EOF) {
+        if (student.id == id) {
+            found = 1;
+            printf("Enter updated student name: ");
+            scanf("%s", student.name);
+            printf("Enter updated student grade: ");
+            scanf("%s", student.grade);
+        }
+        fprintf(tempFile, "%d %s %s\n", student.id, student.name, student.grade);
+    }
+
+    fclose(fp);
+    fclose(tempFile);
+
+    remove("students.txt");
+    rename("temp.txt", "students.txt");
+
+    if (found)
+        printf("Student information updated successfully!\n");
+    else
+        printf("Student with ID %d not found!\n", id);
+}
+
+void removeStudent() {
+    int id;
+    printf("Enter the ID of the student you want to remove: ");
+    scanf("%d", &id);
+
+    FILE *fp = fopen("students.txt", "r");
+    FILE *tempFile = fopen("temp.txt", "w");
+    if (fp == NULL || tempFile == NULL) {
+        printf("Error opening file!\n");
+        return;
+    }
+
+    struct Student student;
+    int found = 0;
+    while (fscanf(fp, "%d %s %s",
+&student.id, student.name, student.GPA) != EOF) {
+        if (student.id == id) {
+            found = 1;
+            continue; 
+        }
+        fprintf(tempFile, "%d %s %s %s\n", student.id, student.name , student.grade);
+    }
+
+    fclose(fp);
+    fclose(tempFile);
+
+    remove("students.txt");
+    rename("temp.txt", "students.txt");
+
+    if (found)
+        printf("Student removed successfully!\n");
+    else
+        printf("Student with ID %d not found!\n", id);
+}
+
+void displayStudents() {
+    FILE *fp = fopen("students.txt", "r");
+    if (fp == NULL) {
+        printf("Error opening file!\n");
+        return;
+    }
+    struct Student student;
+    printf("ID\tName\tGrade\n");
+    while (fscanf(fp, "%d %s %s", &student.id, student.name, student.grade) != EOF) {
+        printf("%d\t%s\t%s\n", student.id, student.name, student.grade);
+    }
+
+    fclose(fp);
+}
+
+void addTeacher() {
+    struct Teacher newTeacher;
+    printf("Enter teacher name: ");
+    scanf("%s", newTeacher.name);
+    printf("Enter teacher ID: ");
+    scanf("%d", &newTeacher.id);
+    printf("Enter subject taught by the teacher: ");
+    scanf("%s", newTeacher.subject);
+
+    FILE *fp = fopen("teachers.txt", "a");
+    if (fp == NULL) {
+        printf("Error opening file!\n");
+        return;
+    }
+    fprintf(fp, "%d %s %s\n", newTeacher.id, newTeacher.name, newTeacher.subject);
+    fclose(fp);
+    printf("Teacher added successfully!\n");
+}
+
+void updateTeacherInfo() {
+    int id;
+    printf("Enter the ID of the teacher whose information you want to update: ");
+    scanf("%d", &id);
+
+    FILE *fp = fopen("teachers.txt", "r");
+    FILE *tempFile = fopen("temp.txt", "w");
+    if (fp == NULL || tempFile == NULL) {
+        printf("Error opening file!\n");
+        return;
+    }
+
+    struct Teacher teacher;
+    int found = 0;
+    while (fscanf(fp, "%d %s %s", &teacher.id, teacher.name, teacher.subject) != EOF) {
+        if (teacher.id == id) {
+            found = 1;
+            printf("Enter updated teacher name: ");
+            scanf("%s", teacher.name);
+            printf("Enter updated subject taught by the teacher: ");
+            scanf("%s", teacher.subject);
+        }
+        fprintf(tempFile, "%d %s %s\n", teacher.id, teacher.name, teacher.subject);
+    }
+
+    fclose(fp);
+    fclose(tempFile);
+
+    remove("teachers.txt");
+    rename("temp.txt", "teachers.txt");
+
+    if (found)
+        printf("Teacher information updated successfully!\n");
+    else
+        printf("Teacher with ID %d not found!\n", id);
+}
+
+void removeTeacher() {
+    int id;
+    printf("Enter the ID of the teacher you want to remove: ");
+    scanf("%d", &id);
+
+    FILE *fp = fopen("teachers.txt", "r");
+    FILE *tempFile = fopen("temp.txt", "w");
+    if (fp == NULL || tempFile == NULL) {
+        printf("Error opening file!\n");
+        return;
+    }
+
+    struct Teacher teacher;
+    int found = 0;
+    while (fscanf(fp, "%d %s %s", &teacher.id, teacher.name, teacher.subject) != EOF) {
+        if (teacher.id == id) {
+            found = 1;
+            continue; 
+        }
+        fprintf(tempFile, "%d %s %s\n", teacher.id, teacher.name , teacher.subject);
+    }
+
+    fclose(fp);
+    fclose(tempFile);
+
+    remove("teachers.txt");
+    rename("temp.txt", "teachers.txt");
+
+    if (found)
+        printf("Teacher removed successfully!\n");
+    else
+        printf("Teacher with ID %d not found!\n", id);
+}
+
+void calculateAverageGrade() {
+    FILE *fp = fopen("students.txt", "r");
+    if (fp == NULL) {
+        printf("Error opening file!\n");
+        return;
+    }
+
+    int totalStudents = 0;
+    int totalGrades = 0;
+    char studentGrade[3]; // Assuming grade is a string with a maximum length of 2 characters
+
+    while (fscanf(fp, "%*d %*s %s", studentGrade) == 1) {
+        if (strcmp(studentGrade, "XII") == 0) {
+            // Convert "XII" to a numerical value, e.g., 12
+            totalGrades += 12;
+        } else {
+            // Convert other grades as necessary
+            // Assuming other grades are represented as integers
+            totalGrades += atoi(studentGrade);
+        }
+        totalStudents++;
+    }
+
+    fclose(fp);
+
+    if (totalStudents == 0) {
+        printf("No students found.\n");
+        return;
+    }
+
+    float averageGrade = (float)totalGrades / totalStudents;
+    printf("Average grade of all students: %.2f\n", averageGrade);
 }
