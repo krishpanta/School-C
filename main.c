@@ -3,18 +3,17 @@
 #include <string.h>
 #include <ctype.h>
 
-
 struct Student {
     int id;
     char name[50];
-    char grade[3]; 
+    char GPA[3];
 };
+
 struct Teacher {
     int id;
     char name[50];
     char subject[50];
 };
-
 
 void adminSignup();
 void adminLogin();
@@ -26,12 +25,10 @@ void displayStudents();
 void addTeacher();
 void updateTeacherInfo();
 void removeTeacher();
-void calculateAverageGrade();
-
+void calculateAverageGPA();
 
 int main() {
     int choice;
-
     do {
         printf("\n1. Admin Signup\n");
         printf("2. Admin Login\n");
@@ -89,10 +86,8 @@ void adminSignup() {
             FILE *fp = fopen("admin.txt", "w");
             fprintf(fp, "%s %s", username, password);
             fclose(fp);
-
             printf("Admin account created successfully!\n");
         }
-
     } while (!valid);
 }
 
@@ -113,8 +108,6 @@ void adminLogin() {
 
     if (strcmp(username, storedUsername) == 0 && strcmp(password, storedPassword) == 0) {
         printf("Admin login successful!\n");
-
-        
         int adminChoice;
         do {
             printf("\n--------------------------------------\n");
@@ -125,7 +118,7 @@ void adminLogin() {
             printf("5. Add Teacher\n");
             printf("6. Update Teacher Information\n");
             printf("7. Remove Teacher\n");
-            printf("8. Calculate Average Grade\n");
+            printf("8. Calculate Average GPA\n");
             printf("9. Exit\n");
             printf("--------------------------------------\n");
             printf("Enter your choice: ");
@@ -154,7 +147,7 @@ void adminLogin() {
                     removeTeacher();
                     break;
                 case 8:
-                    calculateAverageGrade();
+                    calculateAverageGPA();
                     break;
                 case 9:
                     exitProgram();
@@ -180,14 +173,14 @@ void addStudent() {
     printf("Enter student ID: ");
     scanf("%d", &newStudent.id);
     printf("Enter student GPA: ");
-    scanf("%s", newStudent.GPA); 
+    scanf("%s", newStudent.GPA);
 
     FILE *fp = fopen("students.txt", "a");
     if (fp == NULL) {
         printf("Error opening file!\n");
         return;
     }
-    fprintf(fp, "%d %s %s\n", newStudent.id, newStudent.name, newStudent.grade); // Changed to write grade as string
+    fprintf(fp, "%d %s %s\n", newStudent.id, newStudent.name, newStudent.GPA);
     fclose(fp);
     printf("Student added successfully!\n");
 }
@@ -206,15 +199,15 @@ void updateStudentInfo() {
 
     struct Student student;
     int found = 0;
-    while (fscanf(fp, "%d %s %s", &student.id, student.name, student.grade) != EOF) {
+    while (fscanf(fp, "%d %s %s", &student.id, student.name, student.GPA) != EOF) {
         if (student.id == id) {
             found = 1;
             printf("Enter updated student name: ");
             scanf("%s", student.name);
-            printf("Enter updated student grade: ");
-            scanf("%s", student.grade);
+            printf("Enter updated student GPA: ");
+            scanf("%s", student.GPA);
         }
-        fprintf(tempFile, "%d %s %s\n", student.id, student.name, student.grade);
+        fprintf(tempFile, "%d %s %s\n", student.id, student.name, student.GPA);
     }
 
     fclose(fp);
@@ -243,13 +236,12 @@ void removeStudent() {
 
     struct Student student;
     int found = 0;
-    while (fscanf(fp, "%d %s %s",
-&student.id, student.name, student.GPA) != EOF) {
+    while (fscanf(fp, "%d %s %s", &student.id, student.name, student.GPA) != EOF) {
         if (student.id == id) {
             found = 1;
-            continue; 
+            continue;
         }
-        fprintf(tempFile, "%d %s %s %s\n", student.id, student.name , student.grade);
+        fprintf(tempFile, "%d %s %s\n", student.id, student.name , student.GPA);
     }
 
     fclose(fp);
@@ -271,9 +263,9 @@ void displayStudents() {
         return;
     }
     struct Student student;
-    printf("ID\tName\tGrade\n");
-    while (fscanf(fp, "%d %s %s", &student.id, student.name, student.grade) != EOF) {
-        printf("%d\t%s\t%s\n", student.id, student.name, student.grade);
+    printf("ID\tName\tGPA\n");
+    while (fscanf(fp, "%d %s %s", &student.id, student.name, student.GPA) != EOF) {
+        printf("%d\t%s\t%s\n", student.id, student.name, student.GPA);
     }
 
     fclose(fp);
@@ -352,7 +344,7 @@ void removeTeacher() {
     while (fscanf(fp, "%d %s %s", &teacher.id, teacher.name, teacher.subject) != EOF) {
         if (teacher.id == id) {
             found = 1;
-            continue; 
+            continue;
         }
         fprintf(tempFile, "%d %s %s\n", teacher.id, teacher.name , teacher.subject);
     }
@@ -369,7 +361,7 @@ void removeTeacher() {
         printf("Teacher with ID %d not found!\n", id);
 }
 
-void calculateAverageGrade() {
+void calculateAverageGPA() {
     FILE *fp = fopen("students.txt", "r");
     if (fp == NULL) {
         printf("Error opening file!\n");
@@ -377,19 +369,12 @@ void calculateAverageGrade() {
     }
 
     int totalStudents = 0;
-    int totalGrades = 0;
-    char studentGrade[3]; // Assuming grade is a string with a maximum length of 2 characters
+    float totalGPA = 0.0;
+    float studentGPA;
 
-    while (fscanf(fp, "%*d %*s %s", studentGrade) == 1) {
-        if (strcmp(studentGrade, "XII") == 0) {
-            // Convert "XII" to a numerical value, e.g., 12
-            totalGrades += 12;
-        } else {
-            // Convert other grades as necessary
-            // Assuming other grades are represented as integers
-            totalGrades += atoi(studentGrade);
-        }
+    while (fscanf(fp, "%*d %*s %f", &studentGPA) == 1) {
         totalStudents++;
+        totalGPA += studentGPA;
     }
 
     fclose(fp);
@@ -399,6 +384,7 @@ void calculateAverageGrade() {
         return;
     }
 
-    float averageGrade = (float)totalGrades / totalStudents;
-    printf("Average grade of all students: %.2f\n", averageGrade);
+    float averageGPA = totalGPA / totalStudents;
+    printf("Average GPA of all students: %.2f\n", averageGPA);
 }
+

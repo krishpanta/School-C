@@ -1,8 +1,3 @@
-2 shishir XII
-2 mandip XII
-3 krish XII
-1 abhinit XII
-4 darshan XII
-1 Raj XI
-2 Hari XI
-3 Shyam XI
+1 krish 3.22
+2 hari  3.00
+1 krish 3.6
